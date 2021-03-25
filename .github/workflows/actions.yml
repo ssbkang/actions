@@ -6,15 +6,19 @@ on:
       location:
         description: 'Define the location where this test environment will be deployed to. For instance, australiaeast, australiasoutheast'
         required: true
+        default: 'australiaeast'
       owner:
         description: 'Define your name as an owner to this test environment'
         required: true
+        default: 'Steven Kang'
       pr_or_branch:
         description: 'Define Pull Request or Branch name'
         required: true
+        default: 'pr9999'
       portainer_image:
         description: 'Define Portainer image to be tested'
         required: true
+        default: 'portainerci/portainer:develop'
       duration:
         description: 'Define how long the environment is required for. Choose one from; pr-30m, pr-1h, pr-1d or pr-7d'
         required: true
@@ -27,7 +31,7 @@ env:
   ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
   TF_RESOURCE_GROUP_NAME: ${{ secrets.TF_RESOURCE_GROUP_NAME }}
   TF_STORAGE_ACCOUNT_NAME: ${{ secrets.TF_STORAGE_ACCOUNT_NAME }}
-  TF_CONTAINER_NAME: ${{ secrets.TF_CONTAINER_NAME }}
+  TF_CONTAINER_NAME: 'test-${{ github.event.inputs.pr_or_branch }}'
   TF_CLOUD_LOCATION: ${{ github.event.inputs.location }}
   TF_CLOUD_OWNER: ${{ github.event.inputs.owner }}
   TF_GITHUB_PR: ${{ github.event.inputs.pr_or_branch }}

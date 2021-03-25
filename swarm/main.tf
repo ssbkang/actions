@@ -13,7 +13,7 @@ provider "azurerm" {
 
 locals {
   ## DO NOT TOUCH
-  prefix                                = "test-${var.pr}-${var.os}"
+  prefix                                = "test-${var.pr}"
   resource_group_name                   = "${local.prefix}-rg"
   virtual_network_name                  = "${local.prefix}-vnet"
   virtual_network_cidr                  = "10.0.0.0/23"
