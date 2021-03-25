@@ -1,24 +1,37 @@
-name: 'test-automation'
+name: 'testenv-automation'
 
 on:
   workflow_dispatch:
     inputs:
-      name:
-        description: 'Person to greet'
+      location:
+        description: 'Define the location where this test environment will be deployed to. For instance, australiaeast, australiasoutheast'
         required: true
-        default: 'Mona the Octocat'
-      home:
-        description: 'location'
-        required: false
-        default: 'The Octoverse'
-      timer:
-        description: 'How long'
+      owner:
+        description: 'Define your name as an owner to this test environment'
         required: true
-        default: '60'
+      pr_or_branch:
+        description: 'Define Pull Request or Branch name'
+        required: true
+      portainer_image:
+        description: 'Define Portainer image to be tested'
+        required: true
+      duration:
+        description: 'Define how long the environment is required for. Choose one from; pr-30m, pr-1h, pr-1d or pr-7d'
+        required: true
+        default: 'pr-30m'
 
 env:
-  TERRAFORM_NAME: ${{ github.event.inputs.name }}
-  TERRAFORM_LOCATION: ${{ github.event.inputs.home }}
+  ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
+  ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
+  ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+  ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
+  TF_RESOURCE_GROUP_NAME: ${{ secrets.TF_RESOURCE_GROUP_NAME }}
+  TF_STORAGE_ACCOUNT_NAME: ${{ secrets.TF_STORAGE_ACCOUNT_NAME }}
+  TF_CONTAINER_NAME: ${{ secrets.TF_CONTAINER_NAME }}
+  TF_CLOUD_LOCATION: ${{ github.event.inputs.location }}
+  TF_CLOUD_OWNER: ${{ github.event.inputs.owner }}
+  TF_GITHUB_PR: ${{ github.event.inputs.pr_or_branch }}
+  TF_PORTAINER_IMAGE: ${{ github.event.inputs.portainer_image }}
 
 jobs:
   terraform_deploy:
@@ -29,21 +42,17 @@ jobs:
     - name: terraform_deploy
       shell: bash
       run: |
-        echo "Hello ${{ env.TERRAFORM_NAME }}!"
-        echo "- in ${{ env.TERRAFORM_LOCATION }}!"
+        env
       id: terraform_deploy
   terraform_destroy:
     runs-on: ubuntu-latest
     environment:
-      name: ${{ github.event.inputs.timer }}
+      name: ${{ github.event.inputs.duration }}
     steps:
     - name: terraform_destroy
-      env:
-        TEMP_DECOM: 'YAY'
       shell: bash
       run: |
         echo "DESTROYING!"
-        echo "Hello ${{ env.TERRAFORM_NAME }}!"
-        echo "- in ${{ env.TERRAFORM_LOCATION }}!"
+        env
       id: terraform_destroy
   
