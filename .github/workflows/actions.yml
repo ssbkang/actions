@@ -73,6 +73,12 @@ jobs:
     environment:
       name: ${{ github.event.inputs.duration }}
     steps:
+    - name: '[Preparation] Checkout the Current Branch'
+      uses: actions/checkout@v2
+    - name: '[Preparation] Setup Terraform Binary'
+      uses: hashicorp/setup-terraform@v1.2.1
+      with:
+        terraform_version: 0.14.7
     - name: '[Terraform] Initialisation'
       shell: bash
       run: |
