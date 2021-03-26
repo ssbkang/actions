@@ -31,7 +31,7 @@ env:
   ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
   TF_RESOURCE_GROUP_NAME: ${{ secrets.TF_RESOURCE_GROUP_NAME }}
   TF_STORAGE_ACCOUNT_NAME: ${{ secrets.TF_STORAGE_ACCOUNT_NAME }}
-  TF_CONTAINER_NAME: 'test-${{ github.event.inputs.pr_or_branch }}'
+  TF_CONTAINER_NAME: ${{ secrets.TF_CONTAINER_NAME }}
   TF_CLOUD_LOCATION: ${{ github.event.inputs.location }}
   TF_CLOUD_OWNER: ${{ github.event.inputs.owner }}
   TF_GITHUB_PR: ${{ github.event.inputs.pr_or_branch }}
@@ -41,22 +41,38 @@ jobs:
   terraform_deploy:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout the Current Branch
+    - name: '[Preparation] Checkout the Current Branch'
       uses: actions/checkout@v2
-    - name: terraform_deploy
+    - name: '[Preparation] Setup Terraform Binary'
+      uses: hashicorp/setup-terraform@v1.2.1
+      with:
+        terraform_version: 0.14.7
+    - name: '[Terraform] Initialisation'
       shell: bash
       run: |
-        env
+        terraform init \
+          -backend-config="resource_group_name=$TF_RESOURCE_GROUP_NAME" \
+          -backend-config="storage_account_name=$TF_STORAGE_ACCOUNT_NAME" \
+          -backend-config="container_name=$TF_CONTAINER_NAME" \
+          -backend-config="key=test-$TF_GITHUB_PR"
+      id: terraform_init
+    - name: '[Terraform] Plan and Apply'
+      shell: bash
+      run: |
+        terraform apply -auto-approve \
+          -var="owner=$TF_CLOUD_OWNER" \
+          -var="pr_or_branch=$TF_GITHUB_PR" \
+          -var="location=$TF_CLOUD_LOCATION" \
+          -var="portainer_image=$TF_PORTAINER_CONTAINER_IMAGE"
       id: terraform_deploy
   terraform_destroy:
     runs-on: ubuntu-latest
     environment:
       name: ${{ github.event.inputs.duration }}
     steps:
-    - name: terraform_destroy
+    - name: '[Terraform] Destroy'
       shell: bash
       run: |
-        echo "DESTROYING!"
-        env
+        terraform plan -destroy -out terraform.tfstate && terraform apply terraform.tfstate
       id: terraform_destroy
   
