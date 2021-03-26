@@ -26,7 +26,6 @@ locals {
   virtual_machine_os_publisher          = "MicrosoftWindowsServer"
   virtual_machine_os_offer              = "WindowsServer"
   virtual_machine_os_sku                = "2019-datacenter-core-with-containers-g2"
-  # virtual_machine_os_sku                = "2019-datacenter-with-containers-g2"
   virtual_machine_os_version            = "latest"
   virtual_machine_worker_scale_set_name = "${local.prefix}-win-wkr-vmss"
 
@@ -169,7 +168,7 @@ resource "azurerm_virtual_machine_extension" "swarm_manager_init" {
   })
 
   protected_settings = jsonencode({
-    "commandToExecute" = "powershell -ExecutionPolicy Unrestricted -File init-manager.ps1 -portainer_image ${var.portainer_image}"
+    "commandToExecute" = "powershell -ExecutionPolicy Unrestricted -File init-manager.ps1 -portainer_image \"${var.portainer_image}\""
   })
 
   tags = local.tags
