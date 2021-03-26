@@ -55,6 +55,7 @@ jobs:
           -backend-config="storage_account_name=$TF_STORAGE_ACCOUNT_NAME" \
           -backend-config="container_name=$TF_CONTAINER_NAME" \
           -backend-config="key=test-$TF_GITHUB_PR"
+      working-directory: swarm
       id: terraform_init
     - name: '[Terraform] Plan and Apply'
       shell: bash
@@ -64,15 +65,27 @@ jobs:
           -var="pr_or_branch=$TF_GITHUB_PR" \
           -var="location=$TF_CLOUD_LOCATION" \
           -var="portainer_image=$TF_PORTAINER_CONTAINER_IMAGE"
+      working-directory: swarm
       id: terraform_deploy
   terraform_destroy:
     runs-on: ubuntu-latest
     environment:
       name: ${{ github.event.inputs.duration }}
     steps:
+    - name: '[Terraform] Initialisation'
+      shell: bash
+      run: |
+        terraform init \
+          -backend-config="resource_group_name=$TF_RESOURCE_GROUP_NAME" \
+          -backend-config="storage_account_name=$TF_STORAGE_ACCOUNT_NAME" \
+          -backend-config="container_name=$TF_CONTAINER_NAME" \
+          -backend-config="key=test-$TF_GITHUB_PR"
+      working-directory: swarm
+      id: terraform_init
     - name: '[Terraform] Destroy'
       shell: bash
       run: |
         terraform plan -destroy -out terraform.tfstate && terraform apply terraform.tfstate
+      working-directory: swarm
       id: terraform_destroy
   
