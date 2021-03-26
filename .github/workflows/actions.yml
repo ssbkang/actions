@@ -64,7 +64,7 @@ jobs:
           -var="owner=$TF_CLOUD_OWNER" \
           -var="pr_or_branch=$TF_GITHUB_PR" \
           -var="location=$TF_CLOUD_LOCATION" \
-          -var="portainer_image=$TF_PORTAINER_CONTAINER_IMAGE"
+          -var="portainer_image=$TF_PORTAINER_IMAGE"
       working-directory: swarm
       id: terraform_deploy
   terraform_destroy:
