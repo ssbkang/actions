@@ -1,4 +1,4 @@
-name: "testenv-automation-${{ github.event.inputs.pr_or_branch }}"
+name: "testenv-automation"
 
 on:
   workflow_dispatch:
