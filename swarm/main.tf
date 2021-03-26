@@ -169,7 +169,7 @@ resource "azurerm_virtual_machine_extension" "swarm_manager_init" {
   })
 
   protected_settings = jsonencode({
-    "commandToExecute" = "powershell -ExecutionPolicy Unrestricted -File init-manager.ps1 -portainer_image \"${var.portainer_image}\""
+    "commandToExecute" = "powershell -ExecutionPolicy Unrestricted -File init-manager.ps1 -portainer_image ${var.portainer_image}"
   })
 
   tags = local.tags
