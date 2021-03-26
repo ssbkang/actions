@@ -69,6 +69,7 @@ jobs:
       id: terraform_deploy
   terraform_destroy:
     runs-on: ubuntu-latest
+    needs: terraform_deploy
     environment:
       name: ${{ github.event.inputs.duration }}
     steps:
