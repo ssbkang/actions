@@ -15,6 +15,10 @@ on:
         description: 'Define Pull Request or Branch name'
         required: true
         default: 'pr9999'
+      environment:
+        description: 'Define which test environment will be deployed to. For instance, swarmlinux, swarmwindows, swarmarm and so on'
+        required: true
+        default: 'swarmlinux'
       portainer_image:
         description: 'Define Portainer image to be tested'
         required: true
