@@ -45,8 +45,8 @@ jobs:
   terraform_deploy:
     runs-on: ubuntu-latest
     steps:
-    - name: '[Preparation] Checkout the Current Branch'
-      uses: actions/checkout@v2
+    # - name: '[Preparation] Checkout the Current Branch'
+    #   uses: actions/checkout@v2
     - name: '[Preparation] Retrieve IPv4 Public IP Address'
       shell: bash
       run: |
