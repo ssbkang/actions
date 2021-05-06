@@ -7,26 +7,26 @@ on:
         description: 'Define the location where this test environment will be deployed to. For instance, australiaeast, australiasoutheast'
         required: true
         default: 'australiaeast'
-      # owner:
-      #   description: 'Define your name as an owner to this test environment'
-      #   required: true
-      #   default: 'Steven Kang'
-      # pr_or_branch:
-      #   description: 'Define Pull Request or Branch name'
-      #   required: true
-      #   default: 'pr9999'
-      # environment:
-      #   description: 'Define which test environment will be deployed to. For instance, swarmlinux, swarmwindows, swarmarm and so on'
-      #   required: true
-      #   default: 'swarmlinux'
-      # portainer_image:
-      #   description: 'Define Portainer image to be tested'
-      #   required: true
-      #   default: 'portainerci/portainer:develop'
-      # duration:
-      #   description: 'Define how long the environment is required for. Choose one from; pr-30m, pr-1h, pr-1d or pr-7d'
-      #   required: true
-      #   default: 'pr-30m'
+      owner:
+        description: 'Define your name as an owner to this test environment'
+        required: true
+        default: 'Steven Kang'
+      pr_or_branch:
+        description: 'Define Pull Request or Branch name'
+        required: true
+        default: 'pr9999'
+      environment:
+        description: 'Define which test environment will be deployed to. For instance, swarmlinux, swarmwindows, swarmarm and so on'
+        required: true
+        default: 'swarmlinux'
+      portainer_image:
+        description: 'Define Portainer image to be tested'
+        required: true
+        default: 'portainerci/portainer:develop'
+      duration:
+        description: 'Define how long the environment is required for. Choose one from; pr-30m, pr-1h, pr-1d or pr-7d'
+        required: true
+        default: 'pr-30m'
 
 env:
   ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
@@ -45,62 +45,57 @@ jobs:
   terraform_deploy:
     runs-on: ubuntu-latest
     steps:
-    # - name: '[Preparation] Checkout the Current Branch'
-    #   uses: actions/checkout@v2
-    - name: '[Preparation] Retrieve IPv4 Public IP Address'
+    - name: '[Preparation] Checkout the Current Branch'
+      uses: actions/checkout@v2
+    - name: '[Preparation] Setup Terraform Binary'
+      uses: hashicorp/setup-terraform@v1.2.1
+      with:
+        terraform_version: 0.14.7
+    - name: '[Terraform] Initialisation'
       shell: bash
       run: |
-        ipv4_pupblic_ip_address=$(curl -4 icanhazip.com)
-        echo $ipv4_pupblic_ip_address
-  #   - name: '[Preparation] Setup Terraform Binary'
-  #     uses: hashicorp/setup-terraform@v1.2.1
-  #     with:
-  #       terraform_version: 0.14.7
-  #   - name: '[Terraform] Initialisation'
-  #     shell: bash
-  #     run: |
-  #       terraform init \
-  #         -backend-config="resource_group_name=$TF_RESOURCE_GROUP_NAME" \
-  #         -backend-config="storage_account_name=$TF_STORAGE_ACCOUNT_NAME" \
-  #         -backend-config="container_name=$TF_CONTAINER_NAME" \
-  #         -backend-config="key=test-$TF_GITHUB_PR"
-  #     working-directory: swarm
-  #     id: terraform_init
-  #   - name: '[Terraform] Plan and Apply'
-  #     shell: bash
-  #     run: |
-  #       terraform apply -auto-approve \
-  #         -var="owner=$TF_CLOUD_OWNER" \
-  #         -var="pr_or_branch=$TF_GITHUB_PR" \
-  #         -var="location=$TF_CLOUD_LOCATION" \
-  #         -var="portainer_image=$TF_PORTAINER_IMAGE"
-  #     working-directory: swarm
-  #     id: terraform_deploy
-  # terraform_destroy:
-  #   runs-on: ubuntu-latest
-  #   needs: terraform_deploy
-  #   environment:
-  #     name: ${{ github.event.inputs.duration }}
-  #   steps:
-  #   - name: '[Preparation] Checkout the Current Branch'
-  #     uses: actions/checkout@v2
-  #   - name: '[Preparation] Setup Terraform Binary'
-  #     uses: hashicorp/setup-terraform@v1.2.1
-  #     with:
-  #       terraform_version: 0.14.7
-  #   - name: '[Terraform] Initialisation'
-  #     shell: bash
-  #     run: |
-  #       terraform init \
-  #         -backend-config="resource_group_name=$TF_RESOURCE_GROUP_NAME" \
-  #         -backend-config="storage_account_name=$TF_STORAGE_ACCOUNT_NAME" \
-  #         -backend-config="container_name=$TF_CONTAINER_NAME" \
-  #         -backend-config="key=test-$TF_GITHUB_PR"
-  #     working-directory: swarm
-  #     id: terraform_init
-  #   - name: '[Terraform] Destroy'
-  #     shell: bash
-  #     run: |
-  #       terraform plan -destroy -out terraform.tfstate && terraform apply terraform.tfstate
-  #     working-directory: swarm
-  #     id: terraform_destroy 
+        terraform init \
+          -backend-config="resource_group_name=$TF_RESOURCE_GROUP_NAME" \
+          -backend-config="storage_account_name=$TF_STORAGE_ACCOUNT_NAME" \
+          -backend-config="container_name=$TF_CONTAINER_NAME" \
+          -backend-config="key=test-$TF_GITHUB_PR"
+      working-directory: swarm
+      id: terraform_init
+    - name: '[Terraform] Plan and Apply'
+      shell: bash
+      run: |
+        terraform apply -auto-approve \
+          -var="owner=$TF_CLOUD_OWNER" \
+          -var="pr_or_branch=$TF_GITHUB_PR" \
+          -var="location=$TF_CLOUD_LOCATION" \
+          -var="portainer_image=$TF_PORTAINER_IMAGE"
+      working-directory: swarm
+      id: terraform_deploy
+  terraform_destroy:
+    runs-on: ubuntu-latest
+    needs: terraform_deploy
+    environment:
+      name: ${{ github.event.inputs.duration }}
+    steps:
+    - name: '[Preparation] Checkout the Current Branch'
+      uses: actions/checkout@v2
+    - name: '[Preparation] Setup Terraform Binary'
+      uses: hashicorp/setup-terraform@v1.2.1
+      with:
+        terraform_version: 0.14.7
+    - name: '[Terraform] Initialisation'
+      shell: bash
+      run: |
+        terraform init \
+          -backend-config="resource_group_name=$TF_RESOURCE_GROUP_NAME" \
+          -backend-config="storage_account_name=$TF_STORAGE_ACCOUNT_NAME" \
+          -backend-config="container_name=$TF_CONTAINER_NAME" \
+          -backend-config="key=test-$TF_GITHUB_PR"
+      working-directory: swarm
+      id: terraform_init
+    - name: '[Terraform] Destroy'
+      shell: bash
+      run: |
+        terraform plan -destroy -out terraform.tfstate && terraform apply terraform.tfstate
+      working-directory: swarm
+      id: terraform_destroy 
