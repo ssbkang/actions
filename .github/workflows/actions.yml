@@ -18,7 +18,7 @@ jobs:
       shell: bash
       run: |
         slack_message=$(echo "Portainer can be accessed via * IP Address: \`192.168.1.1\` * Username: \`admin\` ")
-        echo "##[set-output name=slack_message;]$(echo ${slack_message})"
+        echo "##[set-output name=slack_message;]$(echo ${slack_message}) * Password"
       id: message_init
     - name: '[Notification] Notify the result'
       uses: slackapi/slack-github-action@v1.15.0
