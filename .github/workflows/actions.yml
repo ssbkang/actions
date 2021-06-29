@@ -20,6 +20,11 @@ jobs:
         slack_message=$(echo "Portainer can be accessed with the following details \* IP Address: \`192.168.1.1\` \* Username: \`admin\` \`n test")
         echo "##[set-output name=slack_message;]$(echo ${slack_message})"
       id: message_init
+    - name: '[Notification] Slackify the Message'
+      uses: LoveToKnow/slackify-markdown-action@v1.0.0
+      id: issuemarkdown
+      with:
+        text: "[${{github.event.issue.title}}](${{github.event.issue.html_url}}) \n ${{github.event.issue.body}}"
     - name: '[Notification] Notify the result'
       uses: rtCamp/action-slack-notify@v2
       env:
@@ -27,4 +32,4 @@ jobs:
         SLACK_USERNAME: "PortainerBot"
         SLACK_ICON: "https://raw.githubusercontent.com/portainer/portainer/master/app/assets/images/logo_ico.png?raw=true"
         MSG_MINIMAL: event,actions url
-        SLACK_MESSAGE: ${{ steps.message_init.outputs.slack_message }}
+        SLACK_MESSAGE: ${{ steps.issuemarkdown.outputs.text }}
