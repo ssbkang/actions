@@ -1,29 +1,28 @@
-name: "testenv-automation"
+name: "testenv-automation"
 
 on:
-  workflow_dispatch:
-    inputs:
-      location:
-        description: 'Define the location where this test environment will be deployed to. For instance, australiaeast, australiasoutheast'
-        required: true
-        default: 'australiaeast'
+  workflow_dispatch:
+    inputs:
+      location:
+        description: 'Define the location where this test environment will be deployed to. For instance, australiaeast, australiasoutheast'
+        required: true
+        default: 'australiaeast'
 
 env:
-  TF_PORTAINER_IMAGE: ${{ github.event.inputs.portainer_image }}
+  TF_PORTAINER_IMAGE: ${{ github.event.inputs.portainer_image }}
 
 jobs:
-  terraform_deploy:
-    runs-on: ubuntu-latest
-    steps:
-    - name: '[Preparation] Checkout the Current Branch'
-      uses: actions/checkout@v2
-    - name: '[Notification] Initialise Slack Message'
-      shell: bash
-      run: |
-        slack_message=$(echo "Testing Message * IP Address: \`192.168.0.1\` * Username: \`admin\`")
+  terraform_deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - name: '[Preparation] Checkout the Current Branch'
+      uses: actions/checkout@v2
+    - name: '[Notification] Initialise Slack Message'
+      shell: bash
+      run: |
+        slack_message=$(echo "Testing Message * IP Address: \`192.168.0.1\` * Username: \`admin\`")
         echo "##[set-output name=slack_message;]$(echo ${slack_message})"
-
-      id: message_init
+      id: message_init
     - name: '[Notification] Notify the result'
       uses: rtCamp/action-slack-notify@v2
       env:
@@ -31,4 +30,4 @@ jobs:
         SLACK_USERNAME: "PortainerBot"
         SLACK_ICON: "https://raw.githubusercontent.com/portainer/portainer/master/app/assets/images/logo_ico.png?raw=true"
         MSG_MINIMAL: event,actions url
-        SLACK_MESSAGE: ${{ steps.message_init.outputs.slack_message }} 
+        SLACK_MESSAGE: ${{ steps.message_init.outputs.slack_message }}
