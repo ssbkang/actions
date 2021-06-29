@@ -21,10 +21,8 @@ jobs:
         echo "##[set-output name=slack_message;]$(echo ${slack_message})"
       id: message_init
     - name: '[Notification] Notify the result'
-      uses: rtCamp/action-slack-notify@v2
+      uses: slackapi/slack-github-action@v1.15.0
       env:
-        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-        SLACK_USERNAME: "PortainerBot"
-        SLACK_ICON: "https://raw.githubusercontent.com/portainer/portainer/master/app/assets/images/logo_ico.png?raw=true"
-        MSG_MINIMAL: event,actions url
-        SLACK_MESSAGE: ${{ steps.message_init.outputs.slack_message }}
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      with:
+        slack-message: ${{ steps.message_init.outputs.slack_message }}
