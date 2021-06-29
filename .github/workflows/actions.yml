@@ -21,7 +21,7 @@ jobs:
         echo "##[set-output name=slack_message;]$(echo ${slack_message})"
       id: message_init
     - name: '[Notification] Notify the result'
-      uses: slackapi/slack-github-action@v1.15.0
+      uses: slackapi/slack-github-action@v1.14.0
       env:
         SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
       with:
