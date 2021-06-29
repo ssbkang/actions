@@ -24,5 +24,3 @@ jobs:
       uses: slackapi/slack-github-action@v1.14.0
       env:
         SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-      with:
-        slack-message: ${{ steps.message_init.outputs.slack_message }}
