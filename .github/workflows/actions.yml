@@ -22,14 +22,16 @@ jobs:
       id: message_init
     - name: '[Notification] Slackify the Message'
       uses: LoveToKnow/slackify-markdown-action@v1.0.0
-      id: issuemarkdown
+      id: markdown
       with:
-        text: "[${{github.event.issue.title}}](${{github.event.issue.html_url}}) \n ${{github.event.issue.body}}"
+        text: "[Docker Swarm](* IP Address: `192.168.1.1` * Password: `asdf`"
     - name: '[Notification] Notify the result'
       uses: rtCamp/action-slack-notify@v2
       env:
+        SLACK_TITLE: Docker Swarm
         SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
         SLACK_USERNAME: "PortainerBot"
         SLACK_ICON: "https://raw.githubusercontent.com/portainer/portainer/master/app/assets/images/logo_ico.png?raw=true"
-        MSG_MINIMAL: event,actions url
-        SLACK_MESSAGE: ${{ steps.issuemarkdown.outputs.text }}
+        # MSG_MINIMAL: event,actions url
+        MSG_MINIMAL: true
+        SLACK_MESSAGE: ${{ steps.markdown.outputs.text }}
