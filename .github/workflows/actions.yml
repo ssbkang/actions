@@ -53,8 +53,11 @@ jobs:
     needs: [deployazure,deployaws]
     steps:
     - name: '[Notification] Preparation for Slack Message'
+      env:
+        if: needs.deployazure.outputs.text != ''
+        SLACK_MESSAGE_TEXT: ${{ needs.deployazure.outputs.text }}
       shell: bash
       run: |
-        echo "${{needs.deployazure.outputs.text}}"
-        echo "${{needs.deployaws.outputs.text}}"
+        echo "Azure: ${SLACK_MESSAGE_TEXT}"
+        echo "AWS: ${{needs.deployaws.outputs.text}}"
       id: message_preparation
