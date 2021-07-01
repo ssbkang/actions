@@ -55,6 +55,6 @@ jobs:
     - name: '[Notification] Preparation for Slack Message'
       shell: bash
       run: |
-        echo ${{needs.deployazure.outputs.text}}
-        echo ${{needs.deployaws.outputs.text}}
+        echo "${{needs.deployazure.outputs.text}}"
+        echo "${{needs.deployaws.outputs.text}}"
       id: message_preparation
