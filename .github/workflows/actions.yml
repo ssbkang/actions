@@ -10,6 +10,7 @@ on:
 
 jobs:
   deployazure:
+    if: github.event.inputs.portainer_image == 'portainerci/portainer:develop'
     runs-on: ubuntu-latest
     steps:
     - name: '[Preparation] Checkout the Current Branch'
@@ -24,14 +25,35 @@ jobs:
       uses: LoveToKnow/slackify-markdown-action@v1.0.0
       id: markdown
       with:
-        text: "**Details** \n * IP Address - `192.168.1.1` \n * Password - `asdf`"
-    - name: '[Notification] Notify the result'
-      uses: rtCamp/action-slack-notify@v2
-      env:
-        SLACK_TITLE: Docker Swarm
-        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-        SLACK_USERNAME: "PortainerBot"
-        SLACK_ICON: "https://raw.githubusercontent.com/portainer/portainer/master/app/assets/images/logo_ico.png?raw=true"
-        # MSG_MINIMAL: event,actions url
-        MSG_MINIMAL: true
-        SLACK_MESSAGE: ${{ steps.markdown.outputs.text }}
+        text: "**Details** \n * IP Address - `192.168.1.1` \n * Password - `azure`"
+    outputs:
+      text: ${{ steps.markdown.outputs.text }}
+  deployaws:
+    if: github.event.inputs.portainer_image == 'arm'
+    runs-on: ubuntu-latest
+    steps:
+    - name: '[Preparation] Checkout the Current Branch'
+      uses: actions/checkout@v2
+    - name: '[Notification] Initialise Slack Message'
+      shell: bash
+      run: |
+        slack_message=$(echo "Portainer can be accessed with the following details \* IP Address: \`192.168.1.1\` \* Username: \`admin\` \`n test")
+        echo "##[set-output name=slack_message;]$(echo ${slack_message})"
+      id: message_init
+    - name: '[Notification] Slackify the Message'
+      uses: LoveToKnow/slackify-markdown-action@v1.0.0
+      id: markdown
+      with:
+        text: "**Details** \n * IP Address - http://192.168.1.1:9000 \n * Password - `aws`"
+    outputs:
+      text: ${{ steps.markdown.outputs.text }}
+  notification:
+    runs-on: ubuntu-latest
+    needs: [deployazure,deployaws]
+    steps:
+    - name: '[Notification] Preparation for Slack Message'
+      shell: bash
+      run: |
+        echo ${{needs.deployazure.outputs.text}}
+        echo ${{needs.deployaws.outputs.text}}
+      id: message_preparation
