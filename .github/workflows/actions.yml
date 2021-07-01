@@ -48,6 +48,7 @@ jobs:
     outputs:
       text: ${{ steps.markdown.outputs.text }}
   notification:
+    if: ${{ !failure() || !cancelled() }}
     runs-on: ubuntu-latest
     needs: [deployazure,deployaws]
     steps:
