@@ -21,8 +21,8 @@ jobs:
       uses: cypress-io/github-action@v2
       with:
         build: npm install
-        wait-on: '20.53.187.119:9000'
-        wait-on-timeout: 120
+        # wait-on: '20.53.187.119:9000'
+        # wait-on-timeout: 120
         # working-directory: src/tests/kubernetes
         browser: ${{ matrix.browser }}
         spec: src/tests/kubernetes/*
