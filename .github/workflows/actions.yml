@@ -17,10 +17,20 @@ jobs:
       with:
         repository: portainer/test-automation
         ssh-key: ${{ secrets.TEST_REPO_SSH_KEY }}
-    - name: '[Preparation] Portainer and Agent Image Validations'
-      shell: bash
-      run: |
-        ls -la
+    - name: '[Cypress] Run'
+      uses: cypress-io/github-action@v2
+      with:
+        build: npm install
+        wait-on: '20.53.187.119:9000'
+        wait-on-timeout: 120
+        # working-directory: src/tests/kubernetes
+        browser: ${{ matrix.browser }}
+        spec: src/tests/kubernetes/*
+      env:
+        PORTAINER_URL: '20.53.187.119:9000'
+        PORTAINER_USERNAME: admin
+        PORTAINER_PASSWORD: ${{ secrets.PORTAINER_PASSWORD }}
+        PORTAINER_KUBERNETES_ENDPOINT: minikube-local
     
 #   deployazure:
 #     if: github.event.inputs.portainer_image == 'portainerci/portainer:develop'
