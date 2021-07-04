@@ -15,7 +15,7 @@ jobs:
     - name: '[Preparation] Checkout the test repo'
       uses: actions/checkout@v2
       with:
-        name: portainer/test-automation
+        repository: portainer/test-automation
         ssh-key: ${{ secrets.TEST_REPO_SSH_KEY }}
     - name: '[Preparation] Portainer and Agent Image Validations'
       shell: bash
