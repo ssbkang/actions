@@ -17,6 +17,7 @@ jobs:
       with:
         repository: portainer/test-automation
         ssh-key: ${{ secrets.TEST_REPO_SSH_KEY }}
+        ref: 'feat-github-actions-integration'
     - name: '[Cypress] Run'
       uses: cypress-io/github-action@v2
       with:
